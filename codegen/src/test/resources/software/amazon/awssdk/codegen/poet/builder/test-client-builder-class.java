@@ -58,7 +58,8 @@ abstract class DefaultJsonBaseClientBuilder<B extends JsonBaseClientBuilder<B, C
         } else {
             c.dualstackEnabled(config.option(AwsClientOption.DUALSTACK_ENDPOINT_ENABLED));
         }
-        return config.toBuilder().option(SdkClientOption.EXECUTION_INTERCEPTORS, interceptors)
+        return config.toBuilder().option(AwsClientOption.DUALSTACK_ENDPOINT_ENABLED, c.dualstackEnabled())
+                     .option(SdkClientOption.EXECUTION_INTERCEPTORS, interceptors)
                      .option(SdkClientOption.RETRY_POLICY, MyServiceRetryPolicy.resolveRetryPolicy(config))
                      .option(SdkClientOption.SERVICE_CONFIGURATION, c.build()).build();
     }

@@ -257,11 +257,30 @@ public class BaseClientBuilderClass implements ClassSpec {
                        .addCode("    c.dualstackEnabled(config.option($T.DUALSTACK_ENDPOINT_ENABLED));", AwsClientOption.class)
                        .addCode("}");
             }
+
+            if (model.getCustomizationConfig().getServiceConfigHasFipsConfig()) {
+                builder.addCode("if (c.fipsModeEnabled() != null) {")
+                       .addCode("    $T.validState(config.option($T.FIPS_ENDPOINT_ENABLED) == null, \"Fips has been "
+                                + "configured on both $L and the client/global level. Please limit fips configuration to "
+                                + "one location.\");",
+                                Validate.class, AwsClientOption.class, clientConfigClassName)
+                       .addCode("} else {")
+                       .addCode("    c.fipsModeEnabled(config.option($T.FIPS_ENDPOINT_ENABLED));", AwsClientOption.class)
+                       .addCode("}");
+            }
         }
 
         // Update configuration
 
         builder.addCode("return config.toBuilder()\n");
+
+        if (model.getCustomizationConfig().getServiceConfigHasDualstackConfig()) {
+            builder.addCode(".option($T.DUALSTACK_ENDPOINT_ENABLED, c.dualstackEnabled())", AwsClientOption.class);
+        }
+
+        if (model.getCustomizationConfig().getServiceConfigHasFipsConfig()) {
+            builder.addCode(".option($T.FIPS_ENDPOINT_ENABLED, c.fipsModeEnabled())", AwsClientOption.class);
+        }
 
         if (model.getEndpointOperation().isPresent()) {
             builder.addCode(".option($T.ENDPOINT_DISCOVERY_ENABLED, endpointDiscoveryEnabled)\n",

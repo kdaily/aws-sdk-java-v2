@@ -17,9 +17,11 @@ package software.amazon.awssdk.services.s3.internal.endpoints;
 
 import java.net.URI;
 import java.util.Objects;
+import java.util.function.Supplier;
 import software.amazon.awssdk.annotations.SdkInternalApi;
 import software.amazon.awssdk.core.SdkRequest;
 import software.amazon.awssdk.http.SdkHttpRequest;
+import software.amazon.awssdk.profiles.ProfileFile;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Configuration;
 
@@ -34,6 +36,9 @@ public final class S3EndpointResolverContext {
     private final S3Configuration serviceConfiguration;
     private final URI endpointOverride;
     private final boolean disableHostPrefixInjection;
+    private final boolean fipsEnabled;
+    private final Supplier<ProfileFile> profileFile;
+    private final String profileName;
 
     private S3EndpointResolverContext(Builder builder) {
         this.request = builder.request;
@@ -42,6 +47,9 @@ public final class S3EndpointResolverContext {
         this.serviceConfiguration = builder.serviceConfiguration;
         this.endpointOverride = builder.endpointOverride;
         this.disableHostPrefixInjection = builder.disableHostPrefixInjection;
+        this.fipsEnabled = builder.fipsEnabled;
+        this.profileFile = builder.profileFile;
+        this.profileName = builder.profileName;
     }
 
     public static Builder builder() {
@@ -64,12 +72,25 @@ public final class S3EndpointResolverContext {
         return serviceConfiguration;
     }
 
+    public boolean fipsEnabled() {
+        return fipsEnabled;
+    }
+
     public URI endpointOverride() {
         return endpointOverride;
     }
 
     public boolean isDisableHostPrefixInjection() {
         return disableHostPrefixInjection;
+    }
+
+    public Supplier<ProfileFile> profileFile() {
+        // TODO: Remove?
+        return profileFile;
+    }
+
+    public String profileName() {
+        return profileName;
     }
 
     @Override
@@ -106,7 +127,10 @@ public final class S3EndpointResolverContext {
                         .request(request)
                         .originalRequest(originalRequest)
                         .region(region)
-                        .serviceConfiguration(serviceConfiguration);
+                        .serviceConfiguration(serviceConfiguration)
+                        .fipsEnabled(fipsEnabled)
+                        .profileFile(profileFile)
+                        .profileName(profileName);
     }
 
     public static final class Builder {
@@ -116,6 +140,9 @@ public final class S3EndpointResolverContext {
         private S3Configuration serviceConfiguration;
         private URI endpointOverride;
         private boolean disableHostPrefixInjection;
+        private boolean fipsEnabled = false;
+        private Supplier<ProfileFile> profileFile;
+        private String profileName;
 
         private Builder() {
         }
@@ -147,6 +174,25 @@ public final class S3EndpointResolverContext {
 
         public Builder disableHostPrefixInjection(boolean disableHostPrefixInjection) {
             this.disableHostPrefixInjection = disableHostPrefixInjection;
+            return this;
+        }
+
+        public Builder fipsEnabled(Boolean fipsEnabled) {
+            if (fipsEnabled == null) {
+                this.fipsEnabled = false;
+            } else {
+                this.fipsEnabled = fipsEnabled;
+            }
+            return this;
+        }
+
+        public Builder profileFile(Supplier<ProfileFile> profileFile) {
+            this.profileFile = profileFile;
+            return this;
+        }
+
+        public Builder profileName(String profileName) {
+            this.profileName = profileName;
             return this;
         }
 

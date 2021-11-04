@@ -49,6 +49,11 @@ public class CustomizationConfig {
     private boolean serviceConfigHasDualstackConfig = false;
 
     /**
+     * Whether a service has a fips configuration in its {@link #serviceSpecificClientConfigClass}.
+     */
+    private boolean serviceConfigHasFipsConfig = false;
+
+    /**
      * Specify shapes to be renamed.
      */
     private Map<String, String> renameShapes;
@@ -258,6 +263,14 @@ public class CustomizationConfig {
 
     public void setServiceConfigHasDualstackConfig(boolean serviceConfigHasDualstackConfig) {
         this.serviceConfigHasDualstackConfig = serviceConfigHasDualstackConfig;
+    }
+
+    public boolean getServiceConfigHasFipsConfig() {
+        return serviceConfigHasFipsConfig;
+    }
+
+    public void setServiceConfigHasFipsConfig(boolean serviceConfigHasFipsConfig) {
+        this.serviceConfigHasFipsConfig = serviceConfigHasFipsConfig;
     }
 
     public List<ConvenienceTypeOverload> getConvenienceTypeOverloads() {

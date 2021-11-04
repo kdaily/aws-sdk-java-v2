@@ -55,6 +55,9 @@ public final class EndpointAddressInterceptor implements ExecutionInterceptor {
                                      .region(executionAttributes.getAttribute(AwsExecutionAttribute.AWS_REGION))
                                      .endpointOverride(endpointOverride)
                                      .serviceConfiguration(serviceConfiguration)
+                                     .fipsEnabled(executionAttributes.getAttribute(AwsExecutionAttribute.FIPS_ENDPOINT_ENABLED))
+                                     .profileFile(() -> executionAttributes.getAttribute(AwsExecutionAttribute.PROFILE_FILE))
+                                     .profileName(executionAttributes.getAttribute(AwsExecutionAttribute.PROFILE_NAME))
                                      .disableHostPrefixInjection(disableHostPrefixInjection)
                                      .build();
 
